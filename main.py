@@ -2,7 +2,7 @@ import requests
 import days
 
 day = 1
-bUseTestInput = True
+bUseTestInput = False
 
 if bUseTestInput:
     print("Loading test input from file")
@@ -26,9 +26,7 @@ else:
         print(response.status_code)
         print(response.text)
 
-funcname1 = 'day' + str(day) + 'a'
-funcname2 = 'day' + str(day) + 'b'
-result = getattr(days, funcname1)(input)
-print("Puzzle 1 result:", result)
-result = getattr(days, funcname2)(input)
-print("Puzzle 2 result:", result)
+funcname = 'day' + str(day)
+result = getattr(days, funcname)(input)
+print("Puzzle 1 result:", result[0])
+print("Puzzle 2 result:", result[1])

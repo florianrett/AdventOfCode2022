@@ -2,182 +2,119 @@ import HelperFunctions as hf
 import HelperClasses as hc
 import collections
 import copy
+import numpy as np
 
-def day1a(input):
+def day1(input):
+    
+    elves = []
 
-    return -1
+    current = 0
+    for line in input:
+        if line == "":
+            elves.append(current)
+            current = 0
+        else:
+            current += int(line)
 
-def day1b(input):
+    a = np.array(elves)
+    largestInd = np.argpartition(a, -3)
+    largest = a[largestInd[-3:]]
 
-    return -1
+    return max(elves), sum(largest)
 
-def day2a(input):
+def day2(input):
 
-    return -1
+    return -1, -1
 
-def day2b(input):
+def day3(input):
 
-    return -1
+    return -1, -1
 
-def day3a(input):
+def day4(input):
 
-    return -1
+    return -1, -1
 
-def day3b(input):
+def day5(input):
 
-    return -1
+    return -1, -1
 
-def day4a(input):
+def day6(input):
 
-    return -1
+    return -1, -1
 
-def day4b(input):
+def day7(input):
 
-    return -1
+    return -1, -1
 
-def day5a(input):
 
-    return -1
+def day8(input):
 
-def day5b(input):
+    return -1, -1
 
-    return -1
+def day9(input):
 
-def day6a(input):
+    return -1, -1
 
-    return -1
+def day10(input):
 
-def day7a(input):
+    return -1, -1
 
-    return -1
+def day11(input):
 
-def day7b(input):
+    return -1, -1
 
-    return -1
+def day12(input):
 
-def day8a(input):
+    return -1, -1
 
-    return -1
+def day13(input):
 
-def day8b(input):
+    return -1, -1
 
-    return -1
+def day14(input):
 
-def day9a(input):
+    return -1, -1
 
-    return -1
+def day15(input):
 
-def day9b(input):
+    return -1, -1
 
-    return -1
+def day16(input):
 
-def day10a(input):
+    return -1, -1
 
-    return -1
+def day17(input):
 
-def day10b(input):
+    return -1, -1
 
-    return -1
+def day18(input):
 
-def day11b(input):
+    return -1, -1
 
-    return -1
+def day19(input):
 
-def day12a(input):
+    return -1, -1
 
-    return -1
+def day20(input):
 
-def day13a(input):
+    return -1, -1
 
-    return -1
+def day21(input):
 
-def day13b(input):
+    return -1, -1
 
-    return -1
+def day22(input):
 
-def day14a(input):
+    return -1, -1
 
-    return -1
+def day23(input):
 
-def day14b(input):
+    return -1, -1
 
-    return -1
+def day24(input):
 
-def day15a(input):
+    return -1, -1
 
-    return -1
+def day25(input):
 
-def day16a(input):
-
-    return -1
-
-def day16b(input):
-
-    return -1
-
-def day17b(input):
-
-    return -1
-
-def day18a(input):
-
-    return -1
-
-def day18b(input):
-
-    return -1
-
-def day19a(input):
-
-    return -1
-
-def day19b(input):
-
-    return -1
-
-def day20a(input):
-
-    return -1
-
-def day20b(input):
-
-    return -1
-
-def day21a(input):
-
-    return -1
-
-def day21b(input):
-
-    return -1
-
-def day22a(input):
-
-    return -1
-
-def day22b(input):    
-
-    return -1
-
-def day23a(input):
-
-    return -1
-
-def day23b(input):
-
-    return -1
-
-def day24a(input):
-
-    return -1
-
-def day24b(input):
-
-    return -1
-
-def day25a(input):
-
-    return -1
-
-def day25b(input):
-    return "Merry Christmas!"
+    return -1, "Merry Christmas!"
