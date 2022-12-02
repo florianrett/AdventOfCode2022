@@ -24,7 +24,38 @@ def day1(input):
 
 def day2(input):
 
-    return -1, -1
+    TotalScore = 0
+    TotalScoreB = 0
+
+    for line in input:
+        left = line.split(' ')[0]
+        right = line.split(' ')[1]
+
+        if left == 'A':
+            other = 0
+        elif left == 'B':
+            other = 1
+        else:
+            other = 2
+        if right == 'X':
+            self = 0
+        elif right == 'Y':
+            self = 1
+        else:
+            self = 2
+        
+        TotalScore += hf.PlayRockPaperScissors(self, other)
+
+        if right == 'X':
+            self = (other + 2) % 3
+        elif right =='Y':
+            self = other
+        else:
+            self = (other + 1) % 3
+        
+        TotalScoreB += hf.PlayRockPaperScissors(self, other)
+
+    return TotalScore, TotalScoreB
 
 def day3(input):
 
