@@ -59,11 +59,54 @@ def day2(input):
 
 def day3(input):
 
-    return -1, -1
+    TotalPrio = 0
+    for line in input:
+        num = int(len(line) / 2)
+        items1 = set(line[:num])
+        items2 = set(line[num:])
+        
+        matchedType = items1.intersection(items2).pop()
+        if matchedType.isupper():
+            TotalPrio += ord(matchedType) - 38
+        else:
+            TotalPrio += ord(matchedType) - 96
+
+    TotalPrio2 = 0
+    for i in range(len(input))[::3]:
+        items1 = set(input[i])
+        items2 = set(input[i+1])
+        items3 = set(input[i+2])
+        badge = items1.intersection(items2).intersection(items3).pop()
+        
+        if badge.isupper():
+            TotalPrio2 += ord(badge) - 38
+        else:
+            TotalPrio2 += ord(badge) - 96
+
+    return TotalPrio, TotalPrio2
 
 def day4(input):
 
-    return -1, -1
+    FullOverlaps = 0
+    PartialOverlaps = 0
+    for pair in input:
+        elf1 = pair.split(',')[0]
+        elf2 = pair.split(',')[1]
+        bounds1 = (int(elf1.split('-')[0]), int(elf1.split('-')[1]))
+        bounds2 = (int(elf2.split('-')[0]), int(elf2.split('-')[1]))
+
+        set1 = set(range(bounds1[0], bounds1[1]+1))
+        set2 = set(range(bounds2[0], bounds2[1]+1))
+        join = set1.union(set2)
+        intersection = set1.intersection(set2)
+        
+        if len(join) == len(set1) or len(join) == len(set2):
+            FullOverlaps += 1
+
+        if len(intersection) > 0:
+            PartialOverlaps += 1
+
+    return FullOverlaps, PartialOverlaps
 
 def day5(input):
 
