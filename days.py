@@ -110,7 +110,50 @@ def day4(input):
 
 def day5(input):
 
-    return -1, -1
+    stacks = {}
+    stacks2 = {}
+    lineNr = 0
+    while not input[lineNr].startswith(" 1"):
+        # build initial stacks
+        line = input[lineNr]
+        stackIdx = 1
+        for i in range(1, len(line), 4):
+            if line[i] != ' ':
+                if stackIdx not in stacks:
+                    stacks[stackIdx] = []
+                    stacks2[stackIdx] = []
+                stacks[stackIdx].insert(0, line[i])
+                stacks2[stackIdx].insert(0, line[i])
+            stackIdx += 1
+
+        lineNr += 1
+    lineNr += 2
+    
+    while lineNr < len(input):
+        move = input[lineNr].split(' ')
+        num = int(move[1])
+        fromS = int(move[3])
+        toS = int(move[5])
+
+        # puzzle 1 moving
+        for i in range(num):
+            stacks[toS].append(stacks[fromS].pop())
+
+        # puzzle 2 moving
+        lowestMovedIdx = len(stacks2[fromS]) - num        
+        for i in range(num):
+            stacks2[toS].append(stacks2[fromS].pop(lowestMovedIdx))
+        lineNr += 1
+        
+    topCrates = ""
+    topCrates2 = ""
+    idx = 1
+    while idx in stacks:
+        topCrates += stacks[idx][-1]
+        topCrates2 += stacks2[idx][-1]
+        idx += 1
+
+    return topCrates, topCrates2
 
 def day6(input):
 
