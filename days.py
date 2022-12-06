@@ -156,8 +156,21 @@ def day5(input):
     return topCrates, topCrates2
 
 def day6(input):
+    signal = input[0]
+    for i in range(3, len(signal)):
+        marker = set(signal[i-3:i+1])
+        if len(marker) == 4:
+            startMarkerPos = i + 1 
+            break
 
-    return -1, -1
+    startMessage = -1
+    for j in range(13, len(signal)):
+        marker = set(signal[j-13:j+1])
+        if len(marker) == 14:
+            startMessage = j + 1
+            break
+
+    return startMarkerPos, startMessage
 
 def day7(input):
 
