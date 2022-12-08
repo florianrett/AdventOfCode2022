@@ -173,13 +173,155 @@ def day6(input):
     return startMarkerPos, startMessage
 
 def day7(input):
+    currentDir = ""
+    subdirs = {}
+    files = {}
 
-    return -1, -1
+    for line in input:
+        if line[0] == '$':
+            cmd = line.split(' ')
+            
+            if cmd[1] == "cd":
+                if cmd[2] == '/':
+                    currentDir = "/"
+                elif cmd[2] == "..":
+                    parentEnd = currentDir.rfind('/', 0, -1)
+                    currentDir = currentDir[:parentEnd + 1]
+                else:
+                    currentDir += cmd[2] + "/"
+            elif cmd[1] == "ls":
+                subdirs[currentDir] = []
+                files[currentDir] = []
+        else:
+            # ls list
+            item = line.split(' ')
+            if item[0] == "dir":
+                subdirs[currentDir].append(currentDir+item[1]+"/")
+            else:
+                files[currentDir].append((item[0], item[1]))
 
+    sizes = {}
+    hf.RecCalculateDirSizes("/", sizes, subdirs, files)
+    
+    totalSizeSmallDirs = 0
+    for dir, size in sizes.items():
+        if size <= 100000:
+            totalSizeSmallDirs += size
+
+    # part 2
+    neededSpace = 30000000
+    neededSpace -= 70000000 - sizes["/"]
+    
+    smallestDirSize = sizes["/"]
+    for size in sizes.values():
+        if size >= neededSpace and size < smallestDirSize:
+            smallestDirSize = size
+
+
+    return totalSizeSmallDirs, smallestDirSize
 
 def day8(input):
+    h = len(input)
+    w = len(input[0])
 
-    return -1, -1
+    top = []
+    right = []
+    bottom = []
+    left = []
+    
+    # calc visibilities
+    for column in range(w):
+        # from top
+        top.append([])
+        blockedHeight = -1
+        for row in range(h):
+            height = int(str(input[row])[column])
+            if height > blockedHeight:
+                top[column].append(True)
+                blockedHeight = height
+            else:
+                top[column].append(False)
+        # from bottom
+        bottom.append([])
+        blockedHeight = -1
+        for row in reversed(range(h)):
+            height = int(str(input[row])[column])
+            if height > blockedHeight:
+                bottom[column].append(True)
+                blockedHeight = height
+            else:
+                bottom[column].append(False)
+    for row in range(h):
+        # from left
+        left.append([])
+        blockedHeight = -1
+        for column in range(w):
+            height = int(str(input[row])[column])
+            if height > blockedHeight:
+                left[row].append(True)
+                blockedHeight = height
+            else:
+                left[row].append(False)
+        # from right
+        right.append([])
+        blockedHeight = -1
+        for column in reversed(range(w)):
+            height = int(str(input[row])[column])
+            if height > blockedHeight:
+                right[row].append(True)
+                blockedHeight = height
+            else:
+                right[row].append(False)
+
+    numVisibleTrees = 0
+    for y in range(h):
+        revY  = h - y - 1
+        for x in range(w):
+            revX = w - x - 1
+            if top[x][y] or bottom[x][revY] or left[y][x] or right[y][revX]:
+                # print("Tree at", x, y, "is visible")
+                numVisibleTrees += 1
+
+    highestScenicScore = 0
+
+    for y in range(h):
+        for x in range(w):
+            height = input[y][x]
+            sLeft = 0
+            sRight = 0
+            sTop = 0
+            sBottom = 0
+            
+            i = x - 1
+            while i >= 0:
+                sLeft += 1
+                if input[y][i] >= height:
+                    break
+                i -= 1
+            i = x + 1
+            while i < w:
+                sRight += 1
+                if input[y][i] >= height:
+                    break
+                i += 1
+            i = y - 1
+            while i >= 0:
+                sTop += 1
+                if input[i][x] >= height:
+                    break
+                i -= 1
+            i = y + 1
+            while i < h:
+                sBottom += 1
+                if input[i][x] >= height:
+                    break
+                i += 1
+            
+            score = sLeft * sRight * sTop * sBottom
+            if score > highestScenicScore:
+                highestScenicScore = score
+
+    return numVisibleTrees, highestScenicScore
 
 def day9(input):
 

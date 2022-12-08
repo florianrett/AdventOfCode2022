@@ -13,3 +13,15 @@ def PlayRockPaperScissors(PlayerA, PlayerB):
     else:
         # lose
         return Score
+
+# recursive calc dir sizes
+def RecCalculateDirSizes(dir, sizes = {}, subdirs = {}, files = {}):
+    dirSize = 0
+    for subdir in subdirs[dir]:
+        RecCalculateDirSizes(subdir, sizes, subdirs, files)
+        dirSize += sizes[subdir]
+    
+    for file in files[dir]:
+        dirSize += int(file[0])
+
+    sizes[dir] = dirSize
