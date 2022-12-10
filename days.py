@@ -325,11 +325,67 @@ def day8(input):
 
 def day9(input):
 
-    return -1, -1
+    currentHead = (0, 0)
+    currentTail = (0, 0)
+    tails = []
+    for i in range(9):
+        tails.append((0, 0))
+    visited = set()
+    visited2 = set()
+    for line in input:
+        dir = line[0]
+        num = int(line[2:])
+
+        for i in range(num):
+            result = hf.MoveRope(currentHead, currentTail, dir)
+            currentHead = result[0]
+            currentTail = result[1]
+            visited.add(currentTail)
+
+            # part 2 longer rope
+            tails[0] = result[1]
+            for i in range(8):
+                result = hf.MoveRope(tails[i], tails[i+1], '')
+                tails[i+1] = result[1]
+            visited2.add(tails[8])
+
+    return len(visited), len(visited2)
 
 def day10(input):
+    cycle = 0
+    regX = 1
+    signalStrengths = []
+    pixels = []
+    for line in input:
+        cycle += 1
 
-    return -1, -1
+        if cycle == 20 or cycle / 20 % 2 == 1:
+            signalStrengths.append(regX * cycle)
+            # print(cycle, regX)
+        pixels.append('#' if abs(regX - (cycle - 1)  % 40) <= 1 else '.')
+        # print(cycle, regX, pixels[-1])
+        
+        cmd = line.split(' ')
+        if cmd[0] == "noop":
+            pass
+        elif cmd[0] == "addx":
+            cycle += 1
+            value = int(cmd[1])
+            if cycle == 20 or cycle / 20 % 2 == 1:
+                signalStrengths.append(regX * cycle)
+                # print(cycle, regX)
+            pixels.append('#' if abs(regX - (cycle - 1) % 40) <= 1 else '.')
+            # print(cycle, regX, pixels[-1])
+            regX += value
+        
+    for y in range(6):
+        drawnLine = ""
+        for x in range(40):
+            drawnLine += pixels[y * 40 + x]
+        print(drawnLine)
+
+    total = sum(signalStrengths)
+    return total, -1
 
 def day11(input):
 

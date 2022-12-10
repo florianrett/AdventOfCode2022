@@ -25,3 +25,32 @@ def RecCalculateDirSizes(dir, sizes = {}, subdirs = {}, files = {}):
         dirSize += int(file[0])
 
     sizes[dir] = dirSize
+
+# move rope head and tail one step
+def MoveRope(head, tail, dir):
+    # update head
+    newHead = head
+    if dir == 'R':
+        newHead = (head[0] + 1, head[1])
+    elif dir == 'L':
+        newHead = (head[0] - 1, head[1])
+    elif dir == 'U':
+        newHead = (head[0], head[1] + 1)
+    elif dir == 'D':
+        newHead = (head[0], head[1] - 1)
+    
+    # update tail
+    dX = newHead[0] - tail[0]
+    dY = newHead[1] - tail[1]
+    moveX = 0
+    moveY = 0
+    if dX == 0 and abs(dY) > 1:
+        moveY = 1 if dY > 0 else -1
+    elif dY == 0 and abs(dX) > 1:
+        moveX = 1 if dX > 0 else -1
+    elif abs(dX) + abs(dY) > 2:
+        moveX = 1 if dX > 0 else -1
+        moveY = 1 if dY > 0 else -1
+    newTail = (tail[0] + moveX, tail[1] + moveY)
+
+    return newHead, newTail
