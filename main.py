@@ -2,7 +2,7 @@ import requests
 import days
 
 day = 11
-bUseTestInput = True
+bUseTestInput = False
 
 if bUseTestInput:
     print("Loading test input from file")

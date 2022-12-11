@@ -3,6 +3,7 @@ import HelperClasses as hc
 import collections
 import copy
 import numpy as np
+import time
 
 def day1(input):
     
@@ -389,7 +390,58 @@ def day10(input):
 
 def day11(input):
 
-    return -1, -1
+    Monkeys = []
+    Monkeys2 = []
+    for i in range(0, len(input), 7):
+        items = [np.int64(x) for x in input[i+1].split(": ")[1].split(", ")]
+        operation = input[i+2].split("= ")[1]
+        test = input[i+3].split(' ')[-1]
+        test = int(test)
+        testTrue = input[i+4].split(' ')[-1]
+        testTrue = int(testTrue)
+        testFalse = input[i+5].split(' ')[-1]
+        testFalse = int(testFalse)
+
+        Monkeys.append(hc.Monkey(items.copy(), operation, test, testTrue, testFalse))
+        Monkeys2.append(hc.Monkey(items.copy(), operation, test, testTrue, testFalse, False))
+    
+    for i in range(20):
+        for m in Monkeys:
+            throws = m.TakeTurn()
+            for t in throws:
+                Monkeys[t[1]].items.append(t[0])
+        
+        # print("After turn", i)
+        # for j in range(len(Monkeys)):
+        #     print("Monkey", j, ":", Monkeys[j].items)
+
+    inspected = []
+    for m in Monkeys:
+        inspected.append(m.timesInspected)
+    inspected.sort()
+    inspected.reverse()
+    MonkeyBusiness = inspected[0] * inspected[1]
+
+    testProduct = np.prod([m.test for m in Monkeys2])
+    for i in range(10000):
+        for m in Monkeys2:
+            throws = m.TakeTurn()
+            for t in throws:
+                Monkeys2[t[1]].items.append(t[0] % testProduct)
+        
+        # if i % 1000 == 0:
+        #     print("After turn", i)
+        #     for j in range(len(Monkeys2)):
+        #         print("Monkey", j, " inspected", Monkeys2[j].timesInspected)
+    
+    inspected.clear()
+    for m in Monkeys2:
+        inspected.append(m.timesInspected)
+    inspected.sort()
+    inspected.reverse()
+    MonkeyBusiness2 = inspected[0] * inspected[1]
+    
+    return MonkeyBusiness, MonkeyBusiness2
 
 def day12(input):
 
