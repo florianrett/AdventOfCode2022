@@ -445,7 +445,92 @@ def day11(input):
 
 def day12(input):
 
-    return -1, -1
+    current = ()
+    target = ()
+    numX = len(input[0])
+    numY = len(input)
+    map = {}
+    for x in range(numX):
+        for y in range(numY):
+            height = input[y][x]
+            if height == 'S':
+                height = 'a'
+                current = (x, y)
+            elif height == 'E':
+                height = 'z'
+                target = (x, y)
+            map[(x, y)] = ord(height)
+
+    # helper lambdas
+    validX = lambda x : x >= 0 and x < numX
+    validY = lambda y : y >= 0 and y < numY
+
+    # depth first search
+    visited = set()
+    steps = {}
+    steps[current] = 0
+    candidates = []
+    
+    while current != target:
+        visited.add(current)
+        currentSteps = steps[current]
+        # print(current, currentSteps)
+        for offset in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+            neighbor = (current[0] + offset[0], current[1] + offset[1])
+            if validX(neighbor[0]) and validY(neighbor[1]):
+                # print("neighbor:", neighbor, "dist:", map[neighbor] - map[current])
+                if map[neighbor] - map[current] <= 1:
+                    if neighbor in visited:
+                        continue
+                    if neighbor not in steps:
+                        steps[neighbor] = currentSteps + 1
+                        candidates.append(neighbor)
+                    elif steps[neighbor] <= currentSteps + 1:
+                        # 
+                        pass
+                    else:
+                        print("This should never be reached!")
+        # print("candidates: ", candidates)
+        current = candidates.pop(0)
+    shortestPath = steps[target]
+
+    # part 2 depth first search
+    current = target
+    visited.clear()
+    steps.clear()
+    steps[current] = 0
+    candidates = []
+    candidates.append(target)
+    shortestHikingPath = numX * numY
+    
+    while len(candidates) > 0:        
+        current = candidates.pop(0)
+        visited.add(current)
+        currentSteps = steps[current]
+        # print(current)
+        if map[current] == ord('a'):
+            if currentSteps < shortestHikingPath:
+                shortestHikingPath = currentSteps
+        # print(current, currentSteps)
+        for offset in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+            neighbor = (current[0] + offset[0], current[1] + offset[1])
+            if validX(neighbor[0]) and validY(neighbor[1]):
+                # print("neighbor:", neighbor, "dist:", map[neighbor] - map[current])
+                if map[neighbor] - map[current] >= -1:
+                    # print(neighbor)
+                    if neighbor in visited:
+                        continue
+                    if neighbor not in steps:
+                        steps[neighbor] = currentSteps + 1
+                        candidates.append(neighbor)                        
+                    elif steps[neighbor] <= currentSteps + 1:
+                        # 
+                        pass
+                    else:
+                        print("This should never be reached!")
+        # print("candidates: ", candidates)
+
+    return shortestPath, shortestHikingPath
 
 def day13(input):
 
