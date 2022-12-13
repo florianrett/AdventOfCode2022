@@ -1,8 +1,8 @@
 import requests
 import days
 
-day = 12
-bUseTestInput = False
+day = 14
+bUseTestInput = True
 
 if bUseTestInput:
     print("Loading test input from file")

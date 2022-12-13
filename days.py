@@ -4,6 +4,7 @@ import collections
 import copy
 import numpy as np
 import time
+import ast
 
 def day1(input):
     
@@ -534,10 +535,49 @@ def day12(input):
 
 def day13(input):
 
-    return -1, -1
+    pairInd = 0
+    sum = 0
+    packets = []
+    for i in range(0, len(input), 3):
+        pairInd += 1
+        packet1 = ast.literal_eval(input[i])
+        packet2 = ast.literal_eval(input[i+1])
+        packets.append(packet1.copy())
+        packets.append(packet2.copy())
+
+        if hf.ComparePackets(packet1, packet2) == 1:
+            sum += pairInd
+
+    # part 2, sort packages
+    sortedPackages = []
+    for p in packets:
+        bInserted = False
+        for i in range(len(sortedPackages)):
+            if hf.ComparePackets(p, sortedPackages[i]) == 1:
+                sortedPackages.insert(i, p)
+                bInserted = True
+                break
+        if not bInserted:
+            sortedPackages.append(p)
+    
+    bFirstPacketInserted = False
+    DecoderKey = 1
+    for i in range(len(sortedPackages)):
+        if not bFirstPacketInserted:
+            if hf.ComparePackets([[2]], sortedPackages[i]) == 1:
+                sortedPackages.insert(i, p)
+                bFirstPacketInserted = True
+                DecoderKey = i + 1
+        else:
+            if hf.ComparePackets([[6]], sortedPackages[i]) == 1:
+                sortedPackages.insert(i, p)
+                DecoderKey *= (i + 1)
+                break
+
+    return sum, DecoderKey
 
 def day14(input):
-
+    
     return -1, -1
 
 def day15(input):

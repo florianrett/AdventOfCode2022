@@ -1,4 +1,5 @@
 import collections
+import copy
 
 # Rock = 0, Paper = 1, Scissors = 2
 def PlayRockPaperScissors(PlayerA, PlayerB):
@@ -54,3 +55,42 @@ def MoveRope(head, tail, dir):
     newTail = (tail[0] + moveX, tail[1] + moveY)
 
     return newHead, newTail
+
+# day 13 compare packets recursively
+def ComparePackets(packet1, packet2) -> int:
+    # print("comparing", packet1, "vs", packet2)
+    bLeftIsInt = isinstance(packet1, int)
+    bRightIsInt = isinstance(packet2, int)
+
+    if bLeftIsInt and bRightIsInt:
+        if packet1 < packet2:
+            return 1
+        elif packet1 == packet2:
+            return 0
+        else:
+            return -1
+    
+    if not bLeftIsInt and not bRightIsInt:
+        # both are lists
+        for i in range(len(packet1)):
+            if i >= len(packet2):
+                # right ran out of items
+                return -1
+            comp = ComparePackets(packet1[i], packet2[i])
+            if comp == 0:
+                continue
+            else:
+                return comp
+        if len(packet1) == len(packet2):
+            return 0
+        return 1
+        
+    
+    # mismatched types
+    if bLeftIsInt:
+        return ComparePackets([packet1], packet2)
+    if bRightIsInt:
+        return ComparePackets(packet1, [packet2])
+
+    print("This should never be reached")
+    return -1
