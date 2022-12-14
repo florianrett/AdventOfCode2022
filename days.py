@@ -577,8 +577,67 @@ def day13(input):
     return sum, DecoderKey
 
 def day14(input):
-    
-    return -1, -1
+    tiles = {}
+    lowestRock = 0
+    for line in input:
+        path = line.split(" -> ")
+        points = [(int(x.split(',')[0]), int(x.split(',')[1])) for x in path]
+        
+        for i in range(len(points) - 1):
+            p = points[i]
+            next = points[i+1]
+            if p[0] == next[0]:
+                x = p[0]
+                dir = 1 if p[1] < next[1] else -1
+                for i in range(p[1], next[1] + dir, dir):
+                    tiles[(x, i)] = '#'
+                    if i > lowestRock:
+                        lowestRock = i
+            elif p[1] == next[1]:
+                y = p[1]
+                if y > lowestRock:
+                    lowestRock = y
+                dir = 1 if p[0] < next[0] else -1
+                for i in range(p[0], next[0] + dir, dir):
+                    tiles[(i, y)] = '#'
+
+    sandAtRest = 0
+    solution1 = 0
+    bFilled = False
+    bActuallyFilled = False
+    while not bActuallyFilled:
+        pos = (500, 0)
+        while True:
+            if not bFilled and pos[1] >= lowestRock:
+                bFilled = True
+                solution1 = sandAtRest
+                break
+            elif (500, 0) in tiles:
+                bActuallyFilled = True
+                break
+            if pos[1] == lowestRock + 1:
+                sandAtRest += 1
+                tiles[pos] = 'o'
+                break
+            next = (pos[0], pos[1] + 1)
+            if next not in tiles:
+                pos = next
+                continue
+            next = (pos[0] - 1, pos[1] + 1)
+            if next not in tiles:
+                pos = next
+                continue
+            next = (pos[0] + 1, pos[1] + 1)
+            if next not in tiles:
+                pos = next
+                continue
+            # sand came to rest
+            sandAtRest += 1
+            # print("sand at rest at", pos)
+            tiles[pos] = 'o'
+            break
+
+    return solution1, sandAtRest
 
 def day15(input):
 
