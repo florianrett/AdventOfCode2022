@@ -640,12 +640,96 @@ def day14(input):
     return solution1, sandAtRest
 
 def day15(input):
+    testY = 10
+    maxCoord = 20
+    if len(input) > 20:
+        testY = 2000000
+        maxCoord = 4000000
 
-    return -1, -1
+
+    sensors = [] # map of sensors to distance to closest beacon
+    beacons = set()
+    for line in input:
+        Sx = int(line.split(',')[0].split('=')[1])
+        Sy = int(line.split(':')[0].split('=')[2])
+        Bx = int(line.split("x=")[2].split(',')[0])
+        By = int(line.split('=')[-1])
+
+        dist = abs(Bx - Sx) + abs(By - Sy)
+        sensors.append([(Sx, Sy), dist])
+        beacons.add((Bx, By))
+    
+    # puzzle 1
+    numOccupied = hf.CheckLine(testY, sensors, -10000000, 1000000000)
+    # remove all beacons in the tested line
+    for b in beacons:
+        if b[1] == testY:
+            numOccupied -= 1
+
+    # part 2
+    frequency = -1
+    for y in range(maxCoord + 1):
+        if hf.CheckLine(y, sensors, 0, maxCoord) != maxCoord + 1:
+            # found correct line
+            for x in range(maxCoord + 1):
+                bInRange = False
+                for sensor in sensors:
+                    if hf.IsInSensorRange((x, y), sensor[0], sensor[1]):
+                        bInRange = True
+                        break
+                if not bInRange:
+                    frequency = 4000000 * x + y
+                    break
+            break
+
+    return numOccupied, frequency
 
 def day16(input):
+    allValves = []
+    valveFlowRates = {}
+    valveTunnels = {}
+    for line in input:
+        name = line.split(' ')[1]
+        flow = int(line.split('=')[1].split(';')[0])
+        if "tunnels lead to valves" in line:
+            tunnels = line.split("valves ")[1].split(", ")
+        else:
+            tunnels = [line.split("valve ")[1]]
+        
+        # print(name, flow, tunnels)
+        allValves.append(name)
+        valveFlowRates[name] = flow
+        valveTunnels[name]  = tunnels
+    
+    valves = [v for v in allValves if valveFlowRates[v] != 0]
+    valves.append("AA") # add start valve to have valid start paths for graph traversal
+    distances = {} # distances between all valves with posittive flow rates
+    for i in range(len(valves)):
+        for j in range(i + 1, len(valves)):
+            v1 = valves[i]
+            v2 = valves[j]
+            # BFS until other valve is reached
+            steps = 0
+            visited = set()
+            candidates = set()
+            current = [v1]
+            while True:
+                if v2 in current:
+                    break
+                steps += 1
+                visited.update(current)
+                for c in current:
+                    candidates.update(valveTunnels[c])
+                current = candidates.copy()
+                candidates.clear()
+            distances[(v1, v2)] = steps
+            distances[(v2, v1)] = steps
 
-    return -1, -1
+    print(valves)
+    print(distances)
+    pressureReleased = hf.RecCalcPressure(valves, valveFlowRates, distances, "AA", 30)
+
+    return pressureReleased, -1
 
 def day17(input):
 

@@ -94,3 +94,47 @@ def ComparePackets(packet1, packet2) -> int:
 
     print("This should never be reached")
     return -1
+
+# day 15 is in sensor range
+def IsInSensorRange(point, sensorPos, dist) -> bool:
+    return abs(point[0] - sensorPos[0]) + abs(point[1] - sensorPos[1]) <= dist
+
+def CheckLine(y, sensors, minX, maxX) -> int:    
+    blocks = []
+    for sensor in sensors:
+        pos = sensor[0]
+        dist = sensor[1]
+        width = dist - abs(pos[1] - y)
+        if width >= 0:
+            # print("sensor", pos, "blocking from", pos[0] - width, "to", pos[0] + width)
+            blocks.append((pos[0] - width, pos[0] + width))
+    blocks.sort(key=lambda x: x[0])
+    
+    numOccupied = 0
+    lastBlockUpper = minX - 1
+    for b in blocks:
+        start = max(b[0], lastBlockUpper + 1)
+        end = min(b[1], maxX)
+        if end < start:
+            continue
+        uniqueWidth = end - start + 1
+        numOccupied += uniqueWidth
+        lastBlockUpper = b[1]
+        
+    return numOccupied
+
+# day 16
+def RecCalcPressure(valves, flowRates, distances, current, minutesLeft) -> int:
+    CurrentPressure = flowRates[current] * minutesLeft
+    MaxTotalPressure = 0
+    newValves = valves.copy()
+    newValves.remove(current)
+
+    for v in newValves:
+        time = distances[(current, v)] + 1 # walk there and open it
+        if time > minutesLeft:
+            continue
+
+        MaxTotalPressure = max(MaxTotalPressure, RecCalcPressure(newValves, flowRates, distances, v, minutesLeft - time))
+
+    return CurrentPressure + MaxTotalPressure
