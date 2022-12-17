@@ -6,6 +6,7 @@ import numpy as np
 import time
 import ast
 import math
+from itertools import combinations, permutations
 
 def day1(input):
     
@@ -726,13 +727,41 @@ def day16(input):
             distances[(v1, v2)] = steps
             distances[(v2, v1)] = steps
 
+    valves.remove("AA")
+    valves.sort(key= lambda x : valveFlowRates[x])
+    valves.reverse()
     # print(valves)
     # print(distances)
     pressureReleased = hf.RecCalcPressure(valves, valveFlowRates, distances, "AA", 30)
 
     # part 2
+    pressureReleased2 = -1
+    # pressureReleased2 = hf.RecCalcPressure2(valves, valveFlowRates, distances, 26, "AA", "AA", 0, 0, 0)
+    # print(hf.CalcPressureFixedPath(["JJ", "BB", "CC"], valveFlowRates, distances, 26, "AA"))
+    # print(hf.CalcPressureFixedPath(["DD", "HH", "EE"], valveFlowRates, distances, 26, "AA"))
+    
+    # me and elefant both do half the valves. to avoid mirros I always open the valve wiht the highest flow rate
+    valveSet = set(valves)
+    highestFlowValve = valves.pop(0)
+    MySets = list(combinations(valves, int(len(valves)  / 2)))
+    MySets = [set(x).union([highestFlowValve]) for x in MySets]
+    
+    counter = 0
+    num = len(MySets)
+    for MySet in MySets:
+        counter += 1
+        print(counter, num)
+        OtherSet = valveSet.difference(MySet)
+        pressure1 = 0
+        for perm in permutations(MySet):
+            pressure1 = max(pressure1, hf.CalcPressureFixedPath(list(perm), valveFlowRates, distances, 26, "AA"))
+        pressure2 = 0
+        for perm2 in permutations(OtherSet):
+            pressure2 = max(pressure2, hf.CalcPressureFixedPath(list(perm2), valveFlowRates, distances, 26, "AA"))
+        
+        pressureReleased2 = max(pressureReleased2, pressure1 + pressure2)
 
-    return pressureReleased, -1
+    return pressureReleased, pressureReleased2
 
 def day17(input):
 

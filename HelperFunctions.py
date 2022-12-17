@@ -127,17 +127,93 @@ def CheckLine(y, sensors, minX, maxX) -> int:
 def RecCalcPressure(valves, flowRates, distances, current, minutesLeft) -> int:
     CurrentPressure = flowRates[current] * minutesLeft
     MaxTotalPressure = 0
-    newValves = valves.copy()
-    newValves.remove(current)
 
-    for v in newValves:
+    for v in valves:
         time = distances[(current, v)] + 1 # walk there and open it
         if time > minutesLeft:
             continue
+        newValves = valves.copy()
+        newValves.remove(v)
 
         MaxTotalPressure = max(MaxTotalPressure, RecCalcPressure(newValves, flowRates, distances, v, minutesLeft - time))
 
     return CurrentPressure + MaxTotalPressure
+
+def RecCalcPressure2(valves, flowRates, distances, minutesLeft, current1, current2, remainingWay1, remainingWay2, depth) -> int:
+
+    # if depth <= 2:
+    #     print(minutesLeft, current1, current2, remainingWay1, remainingWay2)
+    print(valves, minutesLeft, current1, current2, remainingWay1, remainingWay2)
+
+    MaxTotalPressure = 0
+    ChildPath = ""
+    
+    if remainingWay1 == 0:
+        CurrentPressure = flowRates[current1] * minutesLeft
+        Path = "1("  + str(27 - minutesLeft) + "):" + current1 + "; "
+
+        sortedValves = valves.copy()
+        # sortedValves.sort(key=lambda x : (minutesLeft - distances[(current1, x)] - 1) * flowRates[x])
+        # sortedValves.reverse()
+        for v in sortedValves:
+            dist = distances[(current1, v)] + 1 # distance + one minute for opening
+            time = min(remainingWay2, dist)
+            if time >= minutesLeft: # neither agent can reach his next destination in time
+                continue
+            newValves = sortedValves.copy()
+            newValves.remove(v)
+
+            # print("A:", time, dist, remainingWay2 - time)
+            result = RecCalcPressure2(newValves, flowRates, distances, minutesLeft - time, v, current2, dist - time, remainingWay2 - time, depth + 1)
+            if result[0] > MaxTotalPressure:
+                # print("Found more efficient path for agent 1 at minute", 27 - minutesLeft, ":", v)
+                MaxTotalPressure = result[0]
+                ChildPath = result[1]
+            break
+                    
+    elif remainingWay2 == 0:
+        CurrentPressure = flowRates[current2] * minutesLeft
+        Path = "2("  + str(27 - minutesLeft) + "):" + current2 + "; "
+
+        sortedValves = valves.copy()
+        # sortedValves.sort(key=lambda x : (minutesLeft - distances[(current2, x)] - 1) * flowRates[x])
+        # sortedValves.reverse()
+        for v in sortedValves:
+            dist = distances[(current2, v)] + 1
+            time = min(remainingWay1, dist)
+            if time >= minutesLeft:
+                continue
+            newValves = sortedValves.copy()
+            newValves.remove(v)
+
+            # print("B:", time, remainingWay1 - time, dist)
+            result = RecCalcPressure2(newValves, flowRates, distances, minutesLeft - time, current1, v, remainingWay1 - time, dist - time, depth + 1)
+            if result[0] > MaxTotalPressure:
+                # print("Found more efficient path for agent 2 at minute", 27 - minutesLeft, ":", v)
+                MaxTotalPressure = result[0]
+                ChildPath = result[1]
+            break
+    else:
+        print("No agent arrived at his destination!")
+
+    print(Path+ChildPath, MaxTotalPressure, valves)
+    return CurrentPressure + MaxTotalPressure, Path + ChildPath
+
+def CalcPressureFixedPath(valves, flowRates, distances, minutesLeft, current) -> int:
+
+    TotalPressure = flowRates[current] * minutesLeft
+    TotalPressure = 0
+
+    while len(valves) > 0:
+        next = valves.pop(0)
+        dist = distances[(current, next)] + 1
+        if dist >= minutesLeft:
+            break
+        minutesLeft -= dist
+        TotalPressure += flowRates[next] * minutesLeft
+        current = next
+
+    return TotalPressure
 
 # day 17
 def IsRockPositionValid(RockPos, rock, rocks) -> bool:

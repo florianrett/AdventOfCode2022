@@ -1,7 +1,7 @@
 import requests
 import days
 
-day = 16
+day = 18
 bUseTestInput = True
 
 if bUseTestInput:
