@@ -5,6 +5,7 @@ import copy
 import numpy as np
 import time
 import ast
+import math
 
 def day1(input):
     
@@ -725,15 +726,133 @@ def day16(input):
             distances[(v1, v2)] = steps
             distances[(v2, v1)] = steps
 
-    print(valves)
-    print(distances)
+    # print(valves)
+    # print(distances)
     pressureReleased = hf.RecCalcPressure(valves, valveFlowRates, distances, "AA", 30)
+
+    # part 2
 
     return pressureReleased, -1
 
 def day17(input):
 
-    return -1, -1
+    jets = [1 if x == '>' else -1 for x in input[0]]
+    rockTypes = [
+        [(0, 0), (1, 0), (2, 0), (3, 0)],
+        [(1, 0), (0, 1), (1, 1), (2, 1), (1, 2)],
+        [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)],
+        [(0, 0), (0, 1), (0, 2), (0, 3)],
+        [(0, 0), (1, 0), (0, 1), (1, 1)]
+    ]
+    
+    highestRock = 0
+    rocks = set()
+    rocks.update([(x, 0) for x in range(7)])
+    jetIndex = 0
+    typeIndex = 0
+
+    knownStates = {}
+
+    for i in range(2022):
+        rock = rockTypes[typeIndex]
+        typeIndex = (typeIndex + 1) % len(rockTypes)
+        rockPos = (2, highestRock + 4)
+        bAtRest = False
+        while not bAtRest:
+            # jet movement
+            move = jets[jetIndex]
+            jetIndex = (jetIndex + 1) % len(jets)
+            newRockPos = (rockPos[0] + move, rockPos[1])
+            if hf.IsRockPositionValid(newRockPos, rock, rocks):
+                rockPos = newRockPos
+            # else:
+            #     print("blocked:", newRockPos)
+
+            # fall movement
+            newRockPos = (rockPos[0], rockPos[1] - 1)
+            if hf.IsRockPositionValid(newRockPos, rock, rocks):
+                rockPos = newRockPos
+            else:
+                bAtRest = True
+                rocks.update([(rockPos[0] + x[0], rockPos[1] + x[1]) for x in rock])
+                for o in rock:
+                    rocks.add((rockPos[0] + o[0], rockPos[1] + o[1]))
+                    highestRock = max(highestRock, rockPos[1] + o[1])
+                # print("Rock", i, "came at rest at", rockPos)
+    result1 = highestRock
+
+    # part 2
+    highestRock = 0
+    rocks = set()
+    rocks.update([(x, 0) for x in range(7)])
+    jetIndex = 0
+    typeIndex = 0
+    
+    numIterations = 1000000000000
+    for i in range(numIterations):
+        rock = rockTypes[typeIndex]
+        typeIndex = (typeIndex + 1) % len(rockTypes)
+        rockPos = (2, highestRock + 4)
+        bAtRest = False
+        while not bAtRest:
+            # jet movement
+            move = jets[jetIndex]
+            jetIndex = (jetIndex + 1) % len(jets)
+            newRockPos = (rockPos[0] + move, rockPos[1])
+            if hf.IsRockPositionValid(newRockPos, rock, rocks):
+                rockPos = newRockPos
+            # else:
+            #     print("blocked:", newRockPos)
+
+            # fall movement
+            newRockPos = (rockPos[0], rockPos[1] - 1)
+            if hf.IsRockPositionValid(newRockPos, rock, rocks):
+                rockPos = newRockPos
+            else:
+                bAtRest = True
+                rocks.update([(rockPos[0] + x[0], rockPos[1] + x[1]) for x in rock])
+                for o in rock:
+                    rocks.add((rockPos[0] + o[0], rockPos[1] + o[1]))
+                    highestRock = max(highestRock, rockPos[1] + o[1])
+                # print("Rock", i, "came at rest at", rockPos)
+
+        heightList = []
+        bValidState = True
+        for x in range(7):
+            bColumnValid = False
+            for y in range(4):
+                if (x, y) in rocks:
+                    bColumnValid = True
+                    heightList.append(True)
+                else:
+                    heightList.append(False)
+            if not bColumnValid:
+                bValidState = False
+                break
+
+        if bValidState:
+            heights = (heightList[0], heightList[1], heightList[2], heightList[3], heightList[4], heightList[5], heightList[6],
+            heightList[7], heightList[8], heightList[9], heightList[10], heightList[11], heightList[12], heightList[13],
+            heightList[14], heightList[15], heightList[16], heightList[17], heightList[18], heightList[19], heightList[20],            
+            heightList[21], heightList[22], heightList[23], heightList[24], heightList[25], heightList[26], heightList[27])
+            currentState = (jetIndex, typeIndex, heights)
+            if currentState in knownStates:
+                steps = i - knownStates[currentState][0]
+                growth = highestRock - knownStates[currentState][1]
+                print("known state found after", i, "rocks. Growth:", growth, "in", steps)
+                # extrapolate if this can perfectly reach target iterations
+                remainingIterations = numIterations - i - 1
+                if remainingIterations % steps == 0:
+                    extrapolationSteps = math.floor(remainingIterations / steps)
+                    i += extrapolationSteps * steps
+                    highestRock += growth * extrapolationSteps
+                    break                  
+            else:
+                knownStates[currentState] = (i, highestRock)
+
+    result2 = highestRock
+
+    return result1, result2
 
 def day18(input):
 

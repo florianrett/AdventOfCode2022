@@ -138,3 +138,11 @@ def RecCalcPressure(valves, flowRates, distances, current, minutesLeft) -> int:
         MaxTotalPressure = max(MaxTotalPressure, RecCalcPressure(newValves, flowRates, distances, v, minutesLeft - time))
 
     return CurrentPressure + MaxTotalPressure
+
+# day 17
+def IsRockPositionValid(RockPos, rock, rocks) -> bool:
+    for offset in rock:
+        pos = (RockPos[0] + offset[0], RockPos[1] + offset[1])
+        if pos[0] < 0 or pos[0] >= 7 or pos in rocks:
+            return False
+    return True
