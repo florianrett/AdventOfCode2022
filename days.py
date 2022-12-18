@@ -736,12 +736,9 @@ def day16(input):
 
     # part 2
     pressureReleased2 = -1
-    # pressureReleased2 = hf.RecCalcPressure2(valves, valveFlowRates, distances, 26, "AA", "AA", 0, 0, 0)
-    # print(hf.CalcPressureFixedPath(["JJ", "BB", "CC"], valveFlowRates, distances, 26, "AA"))
-    # print(hf.CalcPressureFixedPath(["DD", "HH", "EE"], valveFlowRates, distances, 26, "AA"))
+    valveSet = set(valves)
     
     # me and elefant both do half the valves. to avoid mirros I always open the valve wiht the highest flow rate
-    valveSet = set(valves)
     highestFlowValve = valves.pop(0)
     MySets = list(combinations(valves, int(len(valves)  / 2)))
     MySets = [set(x).union([highestFlowValve]) for x in MySets]
@@ -885,7 +882,64 @@ def day17(input):
 
 def day18(input):
 
-    return -1, -1
+    drops = set()
+    maxExtent = 0
+    for line in input:
+        coords = [int(x) for x in line.split(',')]
+        drops.add((coords[0], coords[1], coords[2]))
+        maxExtent = max(maxExtent, max(coords))
+        
+    adjacent = set(permutations([1, 0, 0]))
+    adjacent.update(set(permutations([-1, 0, 0])))
+    emptyNeighbors = set()
+    numSidesExposed = 0
+    for d in drops:
+        for a in adjacent:
+            neighbor = (d[0] + a[0], d[1] + a[1], d[2] + a[2])
+            if neighbor not in drops:
+                numSidesExposed += 1
+                emptyNeighbors.add(neighbor)
+        pass
+
+    # part 2
+    exteriorSides = numSidesExposed
+    outerCubes = set()
+    for n in emptyNeighbors:
+        bIsOuter = False
+        for a in adjacent:
+            bFoundDrop = False
+            for i in range(1, maxExtent): # find drop within n cubes
+                neighbor = (n[0] + i * a[0], n[1] + i * a[1], n[2] + i * a[2])
+                if neighbor in drops:
+                    bFoundDrop = True
+                    break
+            if not bFoundDrop:
+                bIsOuter = True
+                break
+        if bIsOuter:
+            outerCubes.add(n)
+
+    innerCubeCandidates = emptyNeighbors.difference(outerCubes)
+    bKeepSearching = True
+    while bKeepSearching:
+        bKeepSearching = False
+        newOuterCubes = set()
+        for o in outerCubes:
+            for a in adjacent:
+                n = (o[0] + a[0], o[1] + a[1], o[2] + a[2])
+                if n in innerCubeCandidates:
+                    innerCubeCandidates.remove(n)
+                    newOuterCubes.add(n)
+                    bKeepSearching = True
+        outerCubes.update(newOuterCubes)
+
+    for c in innerCubeCandidates:
+        for a in adjacent:
+            neighbor = (c[0] + a[0], c[1] + a[1], c[2] + a[2])
+            if neighbor in drops:
+                exteriorSides -= 1
+            
+    return numSidesExposed, exteriorSides
 
 def day19(input):
 

@@ -222,3 +222,4 @@ def IsRockPositionValid(RockPos, rock, rocks) -> bool:
         if pos[0] < 0 or pos[0] >= 7 or pos in rocks:
             return False
     return True
+
