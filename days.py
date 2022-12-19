@@ -943,7 +943,38 @@ def day18(input):
 
 def day19(input):
 
-    return -1, -1
+    Blueprints = []
+    for bp in input:
+        s = bp.split(' ')
+        ore = int(s[6])
+        clay = int(s[12])
+        obsidianOre = int(s[18])
+        obsidianClay = int(s[21])
+        geodeOre = int(s[27])
+        geodeObsidian = int(s[30])
+
+        Blueprints.append((ore, clay, obsidianOre, obsidianClay, geodeOre, geodeObsidian))
+        
+    QualityLevels = []
+
+    for i in range(len(Blueprints)):
+        print("Calculate blueprint", i)
+        Factory = hc.RobotFactory(Blueprints[i], 24)
+        NumGeodes = Factory.FindOptimum()
+        
+        QualityLevel = (i + 1) * NumGeodes
+        QualityLevels.append(QualityLevel)
+
+    GeodeNumbers2 = []
+    for i in range(3):
+        print("Calculate blueprint", i)
+        Factory = hc.RobotFactory(Blueprints[i], 32)
+        NumGeodes = Factory.FindOptimum()
+        GeodeNumbers2.append(NumGeodes)
+    
+    Solution2 = np.prod(GeodeNumbers2)
+
+    return sum(QualityLevels), Solution2
 
 def day20(input):
 
