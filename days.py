@@ -1,6 +1,8 @@
 import HelperFunctions as hf
 import HelperClasses as hc
+from ProgressBar import ProgressBar
 from HelperClasses import Number
+import typing
 import collections
 import copy
 import numpy as np
@@ -9,7 +11,7 @@ import ast
 import math
 from itertools import combinations, permutations
 
-def day1(input):
+def day1(input, Pbar: ProgressBar):
     
     elves = []
 
@@ -27,7 +29,7 @@ def day1(input):
 
     return max(elves), sum(largest)
 
-def day2(input):
+def day2(input, Pbar: ProgressBar):
 
     TotalScore = 0
     TotalScoreB = 0
@@ -62,7 +64,7 @@ def day2(input):
 
     return TotalScore, TotalScoreB
 
-def day3(input):
+def day3(input, Pbar: ProgressBar):
 
     TotalPrio = 0
     for line in input:
@@ -90,7 +92,7 @@ def day3(input):
 
     return TotalPrio, TotalPrio2
 
-def day4(input):
+def day4(input, Pbar: ProgressBar):
 
     FullOverlaps = 0
     PartialOverlaps = 0
@@ -113,7 +115,7 @@ def day4(input):
 
     return FullOverlaps, PartialOverlaps
 
-def day5(input):
+def day5(input, Pbar: ProgressBar):
 
     stacks = {}
     stacks2 = {}
@@ -160,7 +162,7 @@ def day5(input):
 
     return topCrates, topCrates2
 
-def day6(input):
+def day6(input, Pbar: ProgressBar):
     signal = input[0]
     for i in range(3, len(signal)):
         marker = set(signal[i-3:i+1])
@@ -177,7 +179,7 @@ def day6(input):
 
     return startMarkerPos, startMessage
 
-def day7(input):
+def day7(input, Pbar: ProgressBar):
     currentDir = ""
     subdirs = {}
     files = {}
@@ -225,7 +227,7 @@ def day7(input):
 
     return totalSizeSmallDirs, smallestDirSize
 
-def day8(input):
+def day8(input, Pbar: ProgressBar):
     h = len(input)
     w = len(input[0])
 
@@ -328,7 +330,7 @@ def day8(input):
 
     return numVisibleTrees, highestScenicScore
 
-def day9(input):
+def day9(input, Pbar: ProgressBar):
 
     currentHead = (0, 0)
     currentTail = (0, 0)
@@ -356,7 +358,7 @@ def day9(input):
 
     return len(visited), len(visited2)
 
-def day10(input):
+def day10(input, Pbar: ProgressBar):
     cycle = 0
     regX = 1
     signalStrengths = []
@@ -392,7 +394,7 @@ def day10(input):
     total = sum(signalStrengths)
     return total, -1
 
-def day11(input):
+def day11(input, Pbar: ProgressBar):
 
     Monkeys = []
     Monkeys2 = []
@@ -447,7 +449,7 @@ def day11(input):
     
     return MonkeyBusiness, MonkeyBusiness2
 
-def day12(input):
+def day12(input, Pbar: ProgressBar):
 
     current = ()
     target = ()
@@ -536,7 +538,7 @@ def day12(input):
 
     return shortestPath, shortestHikingPath
 
-def day13(input):
+def day13(input, Pbar: ProgressBar):
 
     pairInd = 0
     sum = 0
@@ -579,7 +581,7 @@ def day13(input):
 
     return sum, DecoderKey
 
-def day14(input):
+def day14(input, Pbar: ProgressBar):
     tiles = {}
     lowestRock = 0
     for line in input:
@@ -642,7 +644,7 @@ def day14(input):
 
     return solution1, sandAtRest
 
-def day15(input):
+def day15(input, Pbar: ProgressBar):
     testY = 10
     maxCoord = 20
     if len(input) > 20:
@@ -687,7 +689,7 @@ def day15(input):
 
     return numOccupied, frequency
 
-def day16(input):
+def day16(input, Pbar: ProgressBar):
     allValves = []
     valveFlowRates = {}
     valveTunnels = {}
@@ -761,7 +763,7 @@ def day16(input):
 
     return pressureReleased, pressureReleased2
 
-def day17(input):
+def day17(input, Pbar: ProgressBar):
 
     jets = [1 if x == '>' else -1 for x in input[0]]
     rockTypes = [
@@ -881,7 +883,7 @@ def day17(input):
 
     return result1, result2
 
-def day18(input):
+def day18(input, Pbar: ProgressBar):
 
     drops = set()
     maxExtent = 0
@@ -942,8 +944,9 @@ def day18(input):
             
     return numSidesExposed, exteriorSides
 
-def day19(input):
+def day19(input, Pbar: ProgressBar):
 
+    Pbar.StartPuzzle1(len(input))
     Blueprints = []
     for bp in input:
         s = bp.split(' ')
@@ -959,29 +962,34 @@ def day19(input):
     QualityLevels = []
 
     for i in range(len(Blueprints)):
-        print("Calculate blueprint", i)
+        Pbar.SetProgress(i)
         Factory = hc.RobotFactory(Blueprints[i], 24)
         NumGeodes = Factory.FindOptimum()
         
         QualityLevel = (i + 1) * NumGeodes
         QualityLevels.append(QualityLevel)
 
+    Pbar.StartPuzzle2(3)
+
     GeodeNumbers2 = []
     for i in range(3):
-        print("Calculate blueprint", i)
+        Pbar.SetProgress(i)
         Factory = hc.RobotFactory(Blueprints[i], 32)
         NumGeodes = Factory.FindOptimum()
         GeodeNumbers2.append(NumGeodes)
     
+    Pbar.FinishPuzzle2()
+
     Solution2 = np.prod(GeodeNumbers2)
 
     return sum(QualityLevels), Solution2
 
-def day20(input):
+def day20(input, Pbar: ProgressBar):
     numbers = [Number(x) for x in input]
     num = len(numbers)
 
-    mixedNumbers = hf.MixNumbers(numbers, 1)
+    Pbar.StartPuzzle1(1)
+    mixedNumbers = hf.MixNumbers(numbers, Pbar, 1)
     mixedInts = [x.Value for x in mixedNumbers]
     
     ind0 = mixedInts.index(0)
@@ -991,33 +999,58 @@ def day20(input):
     coords.append(mixedInts[(ind0 + 3000) % num])
 
     # part 2
+    Pbar.StartPuzzle2(10)
     key = 811589153
     numbers2 = [Number(x.Value * key) for x in numbers]
-    mixed2 = [x.Value for x in hf.MixNumbers(numbers2, 10)]
+    mixed2 = [x.Value for x in hf.MixNumbers(numbers2, Pbar, 10)]
     ind0 = mixed2.index(0)
     coords2 = []
     coords2.append(mixed2[(ind0 + 1000) % num])
     coords2.append(mixed2[(ind0 + 2000) % num])
     coords2.append(mixed2[(ind0 + 3000) % num])
 
+    Pbar.FinishPuzzle2()
+
     return sum(coords), sum(coords2)
 
-def day21(input):
+def day21(input, Pbar: ProgressBar):
+
+    Pbar.StartPuzzle1(0)
+    Pbar.StartPuzzle2(0)
+    Pbar.FinishPuzzle2()
 
     return -1, -1
 
-def day22(input):
+def day22(input, Pbar: ProgressBar):
+
+    Pbar.StartPuzzle1(0)
+    Pbar.StartPuzzle2(0)
+    Pbar.FinishPuzzle2()
 
     return -1, -1
 
-def day23(input):
+def day23(input, Pbar: ProgressBar):
+
+    Pbar.StartPuzzle1(0)
+    Pbar.StartPuzzle2(0)
+    Pbar.FinishPuzzle2()
 
     return -1, -1
 
-def day24(input):
+def day24(input, Pbar: ProgressBar):
+
+    Pbar.StartPuzzle1(0)
+    Pbar.StartPuzzle2(0)
+    Pbar.FinishPuzzle2()
 
     return -1, -1
 
-def day25(input):
+def day25(input, Pbar: ProgressBar):
+
+    Pbar.StartPuzzle1(0)
+
+    
+    Pbar.StartPuzzle2(0)
+    Pbar.FinishPuzzle2()
 
     return -1, "Merry Christmas!"

@@ -2,6 +2,7 @@ import collections
 import copy
 import typing
 from HelperClasses import Number
+from ProgressBar import ProgressBar
 
 # Rock = 0, Paper = 1, Scissors = 2
 def PlayRockPaperScissors(PlayerA, PlayerB):
@@ -226,12 +227,13 @@ def IsRockPositionValid(RockPos, rock, rocks) -> bool:
     return True
 
 # day 20
-def MixNumbers(Numbers: list, MixCount: int = 1) -> typing.List[Number]:
+def MixNumbers(Numbers: list, Pbar: ProgressBar, MixCount: int = 1) -> typing.List[Number]:
     Num = len(Numbers)
 
     MixedNumbers = Numbers.copy()
 
     for i in range(MixCount):
+        Pbar.SetProgress(i)
         x: Number
         for x in Numbers:
             index = MixedNumbers.index(x)
