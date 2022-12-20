@@ -1,5 +1,7 @@
 import collections
 import copy
+import typing
+from HelperClasses import Number
 
 # Rock = 0, Paper = 1, Scissors = 2
 def PlayRockPaperScissors(PlayerA, PlayerB):
@@ -223,3 +225,19 @@ def IsRockPositionValid(RockPos, rock, rocks) -> bool:
             return False
     return True
 
+# day 20
+def MixNumbers(Numbers: list, MixCount: int = 1) -> typing.List[Number]:
+    Num = len(Numbers)
+
+    MixedNumbers = Numbers.copy()
+
+    for i in range(MixCount):
+        x: Number
+        for x in Numbers:
+            index = MixedNumbers.index(x)
+            MixedNumbers.pop(index)
+            # print("insert", x, "at", i + x.Value)
+            MixedNumbers.insert((index + x.Value) % (Num - 1), x)
+            # print(MixedNumbers)
+
+    return MixedNumbers

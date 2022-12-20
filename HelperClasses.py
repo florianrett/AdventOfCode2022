@@ -140,3 +140,17 @@ class RobotFactory:
         
         return
 
+class Number:
+
+    Value = 0
+
+    def __init__(self, value: int) -> None:
+        self.Value = int(value)
+        pass
+
+    def __str__(self) -> str:
+        return str(self.Value)
+        pass
+
+    def __repr__(self) -> str:
+        return str(self.Value)

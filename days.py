@@ -1,5 +1,6 @@
 import HelperFunctions as hf
 import HelperClasses as hc
+from HelperClasses import Number
 import collections
 import copy
 import numpy as np
@@ -977,8 +978,29 @@ def day19(input):
     return sum(QualityLevels), Solution2
 
 def day20(input):
+    numbers = [Number(x) for x in input]
+    num = len(numbers)
 
-    return -1, -1
+    mixedNumbers = hf.MixNumbers(numbers, 1)
+    mixedInts = [x.Value for x in mixedNumbers]
+    
+    ind0 = mixedInts.index(0)
+    coords = []
+    coords.append(mixedInts[(ind0 + 1000) % num])
+    coords.append(mixedInts[(ind0 + 2000) % num])
+    coords.append(mixedInts[(ind0 + 3000) % num])
+
+    # part 2
+    key = 811589153
+    numbers2 = [Number(x.Value * key) for x in numbers]
+    mixed2 = [x.Value for x in hf.MixNumbers(numbers2, 10)]
+    ind0 = mixed2.index(0)
+    coords2 = []
+    coords2.append(mixed2[(ind0 + 1000) % num])
+    coords2.append(mixed2[(ind0 + 2000) % num])
+    coords2.append(mixed2[(ind0 + 3000) % num])
+
+    return sum(coords), sum(coords2)
 
 def day21(input):
 
