@@ -243,3 +243,7 @@ def MixNumbers(Numbers: list, Pbar: ProgressBar, MixCount: int = 1) -> typing.Li
             # print(MixedNumbers)
 
     return MixedNumbers
+
+# day 21
+def RecSolveRiddle(Pbar: ProgressBar, UnsolvedMonkeys: typing.Set[str], SolvedMonkeys):
+    pass

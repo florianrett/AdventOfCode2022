@@ -10,6 +10,7 @@ import time
 import ast
 import math
 from itertools import combinations, permutations
+import operator
 
 def day1(input, Pbar: ProgressBar):
     
@@ -1015,11 +1016,106 @@ def day20(input, Pbar: ProgressBar):
 
 def day21(input, Pbar: ProgressBar):
 
-    Pbar.StartPuzzle1(0)
+    monkeys = {x.split(": ")[0]: x.split(": ")[1].split(' ') for x in input}
+
+    unsolvedMonkeys = set(monkeys.keys())
+    
+    solvedMonkeys = {x: int(monkeys[x][0]) for x in unsolvedMonkeys if monkeys[x][0].isdigit()}
+    for x in solvedMonkeys:
+        unsolvedMonkeys.remove(x)
+
+    Pbar.StartPuzzle1(len(unsolvedMonkeys))
+
+    ops = {"+": operator.add, "-": operator.sub, "*": operator.mul, "/": operator.floordiv}
+    while unsolvedMonkeys:
+        for m in unsolvedMonkeys:
+            expr = monkeys[m]
+            if expr[0] in solvedMonkeys and expr[2] in solvedMonkeys:
+                op = ops[expr[1]]
+                result = op(solvedMonkeys[expr[0]], solvedMonkeys[expr[2]])
+                # print(f"{m} yells number {result}")
+                solvedMonkeys[m] = result
+                unsolvedMonkeys.remove(m)
+                break
+    solution1 = solvedMonkeys["root"]
+    
+    # part 2
     Pbar.StartPuzzle2(0)
+
+    unsolvedMonkeys = set(monkeys.keys())
+    solvedMonkeys = {x: int(monkeys[x][0]) for x in unsolvedMonkeys if monkeys[x][0].isdigit() and x != "humn"}
+    for x in solvedMonkeys:
+        unsolvedMonkeys.remove(x)
+
+    # solve as far as possible
+    while unsolvedMonkeys:
+        bCouldSolve = False
+        for m in unsolvedMonkeys:
+            expr = monkeys[m]            
+            if expr[0] in solvedMonkeys and expr[2] in solvedMonkeys:
+                op = ops[expr[1]]
+                result = op(solvedMonkeys[expr[0]], solvedMonkeys[expr[2]])
+                # print(f"{m} yells number {result}")
+                solvedMonkeys[m] = result
+                unsolvedMonkeys.remove(m)
+                bCouldSolve = True
+                break
+        if not bCouldSolve:
+            break
+
+    revOps = {"+": operator.sub, "-": operator.add, "*": operator.floordiv, "/": operator.mul}
+    # solve recursively assuming there is always one number known
+    current = "root"
+    targetValue = -1
+    left = monkeys[current][0]
+    right = monkeys[current][2]
+    if left in solvedMonkeys:
+        targetValue = solvedMonkeys[left]
+        current = right
+    else:
+        targetValue = solvedMonkeys[right]
+        current = left
+    
+    while current != "humn":
+        left = monkeys[current][0]
+        right = monkeys[current][2]
+        if left in solvedMonkeys:
+            # x = l - r --> r = l - x
+            # x = l + r --> r = x - l
+            # x = l * r --> r = x / l
+            # x = l / r --> r = l / x
+            opStr = monkeys[current][1]
+            if opStr == "-":
+                targetValue = solvedMonkeys[left] - targetValue
+            elif opStr == "+":
+                targetValue = targetValue - solvedMonkeys[left]
+            elif opStr == "*":
+                targetValue = targetValue // solvedMonkeys[left]
+            elif opStr == "/":
+                targetValue = solvedMonkeys[left] // targetValue
+            else:
+                print(f"unknown operator {opStr}!")                
+            current = right
+            pass
+        elif right in solvedMonkeys:
+            # x = l - r --> l = x + r
+            # x = l + r --> l = x - r
+            # x = l * r --> l = x / r
+            # x = l / r --> l = x * r
+            op = revOps[monkeys[current][1]]
+            targetValue = op(targetValue, solvedMonkeys[right])
+            current = left
+            pass
+        else:
+            print(f"{current}: Neither partial monkey is solved: {left}, {right}")
+            break
+
+        pass
+
+
     Pbar.FinishPuzzle2()
 
-    return -1, -1
+    return solution1, targetValue
 
 def day22(input, Pbar: ProgressBar):
 
