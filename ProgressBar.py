@@ -70,6 +70,12 @@ class ProgressBar:
 
         pass
 
+    def IncrementProgress(self):
+        self.CurrentIteration += 1
+        self.UpdateProgress()
+
+        pass
+
     def UpdateProgress(self):
         Progress = self.CurrentIteration / self.TotalIterations
         if Progress - self.CurrentProgress >= 0.01:

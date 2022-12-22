@@ -247,3 +247,86 @@ def MixNumbers(Numbers: list, Pbar: ProgressBar, MixCount: int = 1) -> typing.Li
 # day 21
 def RecSolveRiddle(Pbar: ProgressBar, UnsolvedMonkeys: typing.Set[str], SolvedMonkeys):
     pass
+
+# day 22
+def CubeWrapTestinput(pos, facing):
+
+    if facing == 0: # going east
+        if pos[1] < 4: # side 1 to side 6 (right)
+            return (15, 11 - pos[1]), 2
+        if pos[1] < 8:  # side 4 to side 6 (top)
+            return (19 - pos[1], 8), 1
+        if pos[1] >= 8:  # side 6 to side 1 (right)
+            return (11, 11 - pos[1]), 2
+    
+    if facing == 1: # going south
+        if pos[0] < 4: # side 2 to side 5 (bot)
+            return (11 - pos[0], 11), 3
+        if pos[0] < 8: # side 3 to side 5 (left)
+            return (8, 15 - pos[0]), 1
+        if pos[0] < 12: # side 5 to side 2 (bot)
+            return (11 -  pos[0], 7), 3
+        if pos[0] >= 12: # side 6 to side 2 (left)
+            return (0, 15 - pos[0]), 1
+
+    if facing == 2: # going west
+        if pos[1] < 4: # side 1 to side 3 (top)
+            return (11 - pos[1], 4), 1
+        if pos[1] < 8: # side 2 to side 6 (bot)
+            return (15 - pos[1], 11), 1
+        if pos[1] >= 8: # side 5 to side 3 (bot)
+            return (15 - pos[1], 7), 3
+
+    if facing == 3: # going north
+        if pos[0] < 4: # side 2 to side 1 (top)
+            return (11 - pos[0], 0), 1
+        if pos[0] < 8: # side 3 to side 1 (left)
+            return (8, 11 - pos[0]), 0
+        if pos[0] < 12: # side 1 to side 2 (top)
+            return (11 - pos[0], 4), 1
+        if pos[0] >= 12: # side 6 to side 4 (right)
+            return (11, 19 - pos[0]), 2
+
+    print("encountered unhandled state for {pos} and {facing}!")
+    pass
+
+def CubeWrapMyInput(pos, facing):
+
+    if facing == 0: # going east
+        if pos[1] < 50: # side 2 to side 5 (right)
+            return (99, 149 - pos[1]), 2
+        if pos[1] < 100: # side 3 to side 2 (bot)
+            return (50 + pos[1], 49), 3
+        if pos[1] < 150: # side 5 to side 2 (right)
+            return (149, 149 - pos[1]), 2
+        if pos[1] >= 150: # side 6 to side 5 (bot)
+            return (pos[1] - 100, 149), 3
+
+    if facing == 1: # going south
+        if pos[0] < 50: # side 6 to side 2 (top)
+            return (100 + pos[0], 0), 1
+        if pos[0] < 100: # side 5 to side 6 (right)
+            return (49, 100 + pos[0]), 2
+        if pos[0] >= 100: # side 2 to side 3 (right)
+            return (99, pos[0] - 50), 2
+    
+    if facing == 2: # going west
+        if pos[1] < 50: # side 1 to side 4 (left)
+            return (0, 149 - pos[1]), 0
+        if pos[1] < 100: # side 3 to side 4 (top)
+            return (pos[1] - 50, 100), 1
+        if pos[1] < 150: # side 4 to side 1 (left)
+            return (50, 149 - pos[1]), 0
+        if pos[1] >= 150: # side 6 to side 1 (top)
+            return (pos[1] - 100, 0), 1
+
+    if facing == 3: # going north
+        if pos[0] < 50: # side 4 to side 3 (left)
+            return (50, pos[0] + 50), 0
+        if pos[0] < 100: # side 1 to side 6 (left)
+            return (0, pos[0] + 100), 0
+        if pos[0] >= 100: # side 2 to side 6 (bot)
+            return (pos[0] - 100, 199), 3
+
+    print("encountered unhandled state for {pos} and {facing}!")
+    pass

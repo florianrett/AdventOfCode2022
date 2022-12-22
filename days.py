@@ -11,6 +11,7 @@ import ast
 import math
 from itertools import combinations, permutations
 import operator
+import re
 
 def day1(input, Pbar: ProgressBar):
     
@@ -1119,11 +1120,117 @@ def day21(input, Pbar: ProgressBar):
 
 def day22(input, Pbar: ProgressBar):
 
-    Pbar.StartPuzzle1(0)
-    Pbar.StartPuzzle2(0)
+    dirs = [(1, 0), (0, 1), (-1, 0), (0, -1)] # e, s, w, n
+
+    map  = {}
+    for i in range(len(input) - 1):
+        line = input[i]
+        for x in range(len(line)):
+            if line[x] == ' ':
+                continue
+            else:
+                map[(x, i)] = line[x]
+    
+    instructions = re.split(r"(R|L)", input[-1])
+
+    pos = (0, 0)
+    facing = 0 # start facing east
+    while pos not in map or map[pos] == '#':
+        pos = (pos[0] + 1, 0)
+    
+    Pbar.StartPuzzle1(len(instructions))
+
+    for ins in instructions:
+
+        if ins == 'L':
+            facing -= 1
+            facing %= 4
+        elif ins == 'R':
+            facing += 1
+            facing %= 4
+        else:
+            dir = dirs[facing]
+            for i in range(int(ins)):
+                next = (pos[0] + dir[0], pos[1] + dir[1])
+                if next in map:
+                    if map[next] == '#':
+                        # ran into wall
+                        break
+                    else:
+                        pos = next       
+                else:
+                    # wrap around
+                    opDir = (dir[0] * -1, dir[1] * -1)
+                    next = pos
+                    while next in map:
+                        wrap = next
+                        next = (wrap[0] + opDir[0], wrap[1] + opDir[1])
+                    if map[wrap] == '#':
+                        break
+                    else:
+                        pos = wrap
+
+        Pbar.IncrementProgress()
+
+    row1 = pos[1] + 1
+    column1 = pos[0] + 1
+    password1 = 1000 * row1 + 4 * column1 + facing
+
+
+    Pbar.StartPuzzle2(len(instructions))
+
+    bIsUsingTestInput = len(input[0]) == 12
+    pos = (0, 0)
+    facing = 0 # start facing east
+    while pos not in map or map[pos] == '#':
+        pos = (pos[0] + 1, 0)
+
+    for ins in instructions:
+        if ins == 'L':
+            facing -= 1
+            facing %= 4
+        elif ins == 'R':
+            facing += 1
+            facing %= 4
+        else:
+            for i in range(int(ins)):
+                dir = dirs[facing]
+                next = (pos[0] + dir[0], pos[1] + dir[1])
+                # print(f"nextPos: {next}")
+                if next in map:
+                    if map[next] == '#':
+                        # ran into wall
+                        break
+                    else:
+                        pos = next
+                else:
+                    # cube wrapping. Actual mapping needs to be customized for specific input layout
+                    if bIsUsingTestInput:
+                        wrap = hf.CubeWrapTestinput(next, facing)
+                    else:
+                        wrap = hf.CubeWrapMyInput(next, facing)
+
+                    if wrap[0] not in map:
+                        print(dir, facing, dirs[facing])
+                        print(pos, facing, next, wrap)
+                    next = wrap[0]
+                    # print(f"wrap from {pos} to {next} (dir: {dir}")
+                    if map[next] == '#':
+                        # print("wall wrap")
+                        break
+                    else:
+                        pos = next
+                        facing = wrap[1]
+        # print(ins, pos, facing)
+        Pbar.IncrementProgress()
+    
+    row = pos[1] + 1
+    column = pos[0] + 1
+    password2 = 1000 * row + 4 * column + facing
+        
     Pbar.FinishPuzzle2()
 
-    return -1, -1
+    return password1, password2
 
 def day23(input, Pbar: ProgressBar):
 
