@@ -330,3 +330,40 @@ def CubeWrapMyInput(pos, facing):
 
     print("encountered unhandled state for {pos} and {facing}!")
     pass
+
+# day 23
+dirs = [(0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1)] # N, NE, E, SE, S, SW, W, NW
+# list of possible moves containing 3-tuples: (list[dir indices], moveX, moveY)
+moves = [([0, 1, 7], 0, 1), ([3, 4, 5], 0, -1), ([5, 6, 7], -1, 0), ([1, 2, 3], 1, 0)] # N, S, W, E
+def UpdateElfPositions(elves: typing.Set[tuple], startMoveIndex: int) -> typing.Set[tuple]:
+    newPositions = {}
+
+    for e in elves:
+        adj = [(e[0] + d[0], e[1] + d[1]) in elves for d in dirs]
+        
+        if collections.Counter(adj)[False] == 8:
+            # no other elves
+            newPositions[e] = e
+            continue
+        
+        bFoundMove = False
+        for i in range(startMoveIndex, startMoveIndex + 4):
+            move = moves[i % 4]
+            if all([not adj[x] for x in move[0]]):
+                newPositions[e] = (e[0] + move[1], e[1] + move[2])
+                bFoundMove = True
+                break
+
+        if not bFoundMove:
+            newPositions[e] = e
+
+    c = collections.Counter(newPositions.values())
+
+    outPositions = set()
+    for k, v in newPositions.items():
+        if c[v] == 1:
+            outPositions.add(v)
+        else:
+            outPositions.add(k)
+            
+    return outPositions

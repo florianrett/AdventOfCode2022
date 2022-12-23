@@ -1234,11 +1234,53 @@ def day22(input, Pbar: ProgressBar):
 
 def day23(input, Pbar: ProgressBar):
 
-    Pbar.StartPuzzle1(0)
-    Pbar.StartPuzzle2(0)
+    elves = set()
+    for y in range(len(input)):
+        for x in range(len(input[y])):
+            if input[y][x] == '#':
+                elves.add((x, y * -1))
+
+    Pbar.StartPuzzle1(10)
+
+    positions = elves.copy()
+    for i in range(10):
+        Pbar.SetProgress(i)
+        positions = hf.UpdateElfPositions(positions, i % 4)
+
+    minX, maxX, minY, maxY = 0, 0, 0, 0
+    for p in positions:
+        minX = min(minX, p[0])
+        maxX = max(maxX, p[0])
+        minY = min(minY, p[1])
+        maxY = max(maxY, p[1])
+
+    emptyTiles = 0
+    for y in range(maxY, minY - 1, -1):
+        line = ""
+        for x in range(minX, maxX + 1):
+            if (x, y) in positions:
+                # line += "#"
+                pass
+            else:
+                # line += "."
+                emptyTiles += 1
+        # print(line)
+
+    Pbar.StartPuzzle2(1000)
+
+    positions = elves.copy()
+    numRounds = 0
+    while True:
+        Pbar.SetProgress(numRounds)
+        newPositions = hf.UpdateElfPositions(positions, numRounds % 4)
+        numRounds += 1
+        if len(newPositions.difference(positions)) == 0:
+            break
+        positions = newPositions
+
     Pbar.FinishPuzzle2()
 
-    return -1, -1
+    return emptyTiles, numRounds
 
 def day24(input, Pbar: ProgressBar):
 
