@@ -1284,11 +1284,111 @@ def day23(input, Pbar: ProgressBar):
 
 def day24(input, Pbar: ProgressBar):
 
-    Pbar.StartPuzzle1(0)
-    Pbar.StartPuzzle2(0)
+    blizzardsLeft, blizzardsRight, blizzardsUp, blizzardsDown = set(), set(), set(), set()
+    wallLeft, wallRight, wallTop, wallBottom = 0, len(input[0]) - 1, 0, len(input) - 1
+    
+    for y in range(1, len(input) - 1):
+        line = input[y]
+        for x in range(1, len(line) - 1):
+            if line[x] == '<':
+                blizzardsLeft.add((x, y))
+            elif line[x] == '>':
+                blizzardsRight.add((x, y))
+            elif line[x] == '^':
+                blizzardsUp.add((x, y))
+            elif line[x] == 'v':
+                blizzardsDown.add((x, y))
+            
+        
+    Pbar.StartPuzzle1(1000)
+
+    startPos = (1, 0)
+    targetPos = (wallRight - 1, wallBottom)
+    left = blizzardsLeft.copy()
+    right = blizzardsRight.copy()
+    up = blizzardsUp.copy()
+    down = blizzardsDown.copy()
+
+    numMoves = 0
+    moves = [(0, 0), (-1, 0), (1, 0), (0, 1), (0, -1)] # possible moves: wait, left, right, up, down
+    possiblePositions = set()
+    possiblePositions.add(startPos)
+    while True:
+        Pbar.SetProgress(numMoves)
+        numMoves += 1
+        # move blizzards
+        left = set([(x[0] - 1, x[1]) if x[0] - 1 > wallLeft else (wallRight - 1, x[1]) for x in left])
+        right = set([(x[0] + 1, x[1]) if x[0] + 1 < wallRight else (wallLeft + 1, x[1]) for x in right])
+        up = set([(x[0], x[1] - 1) if x[1] - 1 > wallTop else (x[0], wallBottom - 1) for x in up])
+        down = set([(x[0], x[1] + 1) if x[1] + 1 < wallBottom else (x[0], wallTop + 1) for x in down])
+        
+        # print(numMoves - 1, possiblePositions)
+        newPositions = set()
+        for p in [(x[0] + m[0], x[1] + m[1]) for x in possiblePositions for m in moves]:
+            if p[0] <= wallLeft or p[0] >= wallRight or (p[1] >= wallBottom and p != targetPos) or (p[1] <= wallTop and p != startPos):
+                continue
+            elif p in left or p in right or p in up or p in down:
+                continue
+            else:
+                newPositions.add(p)
+
+        possiblePositions = newPositions
+        if targetPos in possiblePositions:
+            break
+    solution1 = numMoves
+
+    Pbar.StartPuzzle2(1000)
+
+    possiblePositions.clear()
+    possiblePositions.add(targetPos)
+    while True:
+        Pbar.SetProgress(numMoves)
+        numMoves += 1
+        # move blizzards
+        left = set([(x[0] - 1, x[1]) if x[0] - 1 > wallLeft else (wallRight - 1, x[1]) for x in left])
+        right = set([(x[0] + 1, x[1]) if x[0] + 1 < wallRight else (wallLeft + 1, x[1]) for x in right])
+        up = set([(x[0], x[1] - 1) if x[1] - 1 > wallTop else (x[0], wallBottom - 1) for x in up])
+        down = set([(x[0], x[1] + 1) if x[1] + 1 < wallBottom else (x[0], wallTop + 1) for x in down])
+        
+        newPositions = set()
+        for p in [(x[0] + m[0], x[1] + m[1]) for x in possiblePositions for m in moves]:
+            if p[0] <= wallLeft or p[0] >= wallRight or (p[1] >= wallBottom and p != targetPos) or (p[1] <= wallTop and p != startPos):
+                continue
+            elif p in left or p in right or p in up or p in down:
+                continue
+            else:
+                newPositions.add(p)
+
+        possiblePositions = newPositions
+        if startPos in possiblePositions:
+            break
+    possiblePositions.clear()
+    possiblePositions.add(startPos)
+    while True:
+        Pbar.SetProgress(numMoves)
+        numMoves += 1
+        # move blizzards
+        left = set([(x[0] - 1, x[1]) if x[0] - 1 > wallLeft else (wallRight - 1, x[1]) for x in left])
+        right = set([(x[0] + 1, x[1]) if x[0] + 1 < wallRight else (wallLeft + 1, x[1]) for x in right])
+        up = set([(x[0], x[1] - 1) if x[1] - 1 > wallTop else (x[0], wallBottom - 1) for x in up])
+        down = set([(x[0], x[1] + 1) if x[1] + 1 < wallBottom else (x[0], wallTop + 1) for x in down])
+        
+        newPositions = set()
+        for p in [(x[0] + m[0], x[1] + m[1]) for x in possiblePositions for m in moves]:
+            if p[0] <= wallLeft or p[0] >= wallRight or (p[1] >= wallBottom and p != targetPos) or (p[1] <= wallTop and p != startPos):
+                continue
+            elif p in left or p in right or p in up or p in down:
+                continue
+            else:
+                newPositions.add(p)
+
+        possiblePositions = newPositions
+        if targetPos in possiblePositions:
+            break
+        
     Pbar.FinishPuzzle2()
 
-    return -1, -1
+    return solution1, numMoves
 
 def day25(input, Pbar: ProgressBar):
 
