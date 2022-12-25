@@ -1392,10 +1392,34 @@ def day24(input, Pbar: ProgressBar):
 
 def day25(input, Pbar: ProgressBar):
 
-    Pbar.StartPuzzle1(0)
+    SNAFUtoDecimal = {"2": 2, "1": 1, "0": 0, "-": -1, "=": -2}
+    DecimalToSNAFU = {v: k for k, v in SNAFUtoDecimal.items()}
 
+    Pbar.StartPuzzle1(len(input))
+    
+    totals = {} # dict of power indices to list of individual values
+    for line in input:
+        Pbar.IncrementProgress()
+
+        for i in range(len(line)):
+            if i not in totals:
+                totals[i] = []
+
+            totals[i].append(SNAFUtoDecimal[line[-1 * (i  + 1)]])
+    
+    indices = list(totals.keys())
+    indices.sort()
+
+    result = ""
+    overflow = 0
+    for i in indices:
+        total = sum(totals[i]) + overflow
+        overflow = (total + 2) // 5
+        digit = total - overflow * 5
+
+        result = DecimalToSNAFU[digit] + result
     
     Pbar.StartPuzzle2(0)
     Pbar.FinishPuzzle2()
 
-    return -1, "Merry Christmas!"
+    return result, "Merry Christmas!"
